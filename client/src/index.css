@@ -4,18 +4,33 @@
  * Palette and fonts are fixed by /skills/component-style.md.
  * Only these 5 colors are permitted anywhere in the app -- no grays, no white.
  * Only these 3 fonts are permitted -- no default Tailwind font classes.
+ * shadcn/ui semantic tokens below are mapped onto this palette (with opacity
+ * variants for border/muted) rather than introducing new colors.
  */
-@theme {
-  --color-plum: #8c4064;
-  --color-terra: #d48868;
-  --color-ivory: #fffeea;
-  --color-rose: #c38288;
-  --color-rust: #bb581d;
+:root {
+  --plum: #8c4064;
+  --terra: #d48868;
+  --ivory: #fffeea;
+  --rose: #c38288;
+  --rust: #bb581d;
 
-  --color-mango: #f2a65a;
-  --color-blush: #f4a7b9;
-  --color-sunflower: #f7d06a;
-  --color-lilac: #9b72cf;
+  --mango: #f2a65a;
+  --blush: #f4a7b9;
+  --sunflower: #f7d06a;
+  --lilac: #9b72cf;
+}
+
+@theme inline {
+  --color-plum: var(--plum);
+  --color-terra: var(--terra);
+  --color-ivory: var(--ivory);
+  --color-rose: var(--rose);
+  --color-rust: var(--rust);
+
+  --color-mango: var(--mango);
+  --color-blush: var(--blush);
+  --color-sunflower: var(--sunflower);
+  --color-lilac: var(--lilac);
 
   --font-display: 'Modak', cursive;
   --font-handwrite: 'Love Ya Like A Sister', cursive;
@@ -23,11 +38,32 @@
 
   --radius-card: 16px;
   --radius-button: 9px;
+
+  /* shadcn/ui semantic tokens, mapped onto the palette above */
+  --color-background: var(--terra);
+  --color-foreground: var(--plum);
+  --color-card: var(--ivory);
+  --color-card-foreground: var(--plum);
+  --color-popover: var(--ivory);
+  --color-popover-foreground: var(--plum);
+  --color-primary: var(--rust);
+  --color-primary-foreground: var(--ivory);
+  --color-secondary: var(--rose);
+  --color-secondary-foreground: var(--ivory);
+  --color-muted: color-mix(in oklab, var(--rose) 30%, var(--ivory));
+  --color-muted-foreground: var(--plum);
+  --color-accent: var(--rose);
+  --color-accent-foreground: var(--ivory);
+  --color-destructive: var(--rust);
+  --color-border: color-mix(in oklab, var(--plum) 20%, transparent);
+  --color-input: color-mix(in oklab, var(--plum) 20%, transparent);
+  --color-ring: var(--rust);
+  --radius: 9px;
 }
 
 body {
   margin: 0;
-  background: var(--color-terra);
-  color: var(--color-plum);
+  background: var(--terra);
+  color: var(--plum);
   font-family: var(--font-body);
 }

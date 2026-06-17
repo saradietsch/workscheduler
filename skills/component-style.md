@@ -1,7 +1,7 @@
 # component-style.md
 
 ## Project
-Nexus — personal scheduling OS. React + TypeScript + Tailwind + shadcn/ui.
+Sara Scheduler — personal scheduling OS. React + TypeScript + Tailwind + shadcn/ui.
 
 ## Colors
 Only these 5 colors are permitted anywhere in the codebase. No exceptions, no white, no grays.
