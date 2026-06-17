@@ -1,0 +1,33 @@
+@import 'tailwindcss';
+
+/*
+ * Palette and fonts are fixed by /skills/component-style.md.
+ * Only these 5 colors are permitted anywhere in the app -- no grays, no white.
+ * Only these 3 fonts are permitted -- no default Tailwind font classes.
+ */
+@theme {
+  --color-plum: #8c4064;
+  --color-terra: #d48868;
+  --color-ivory: #fffeea;
+  --color-rose: #c38288;
+  --color-rust: #bb581d;
+
+  --color-mango: #f2a65a;
+  --color-blush: #f4a7b9;
+  --color-sunflower: #f7d06a;
+  --color-lilac: #9b72cf;
+
+  --font-display: 'Modak', cursive;
+  --font-handwrite: 'Love Ya Like A Sister', cursive;
+  --font-body: 'Maiden Orange', serif;
+
+  --radius-card: 16px;
+  --radius-button: 9px;
+}
+
+body {
+  margin: 0;
+  background: var(--color-terra);
+  color: var(--color-plum);
+  font-family: var(--font-body);
+}
