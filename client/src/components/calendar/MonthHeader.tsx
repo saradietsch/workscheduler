@@ -4,5 +4,5 @@ export function MonthHeader() {
     .toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
     .toUpperCase()
 
-  return <h1 className="font-display text-3xl text-plum">{label}</h1>
+  return <h1 className="font-display text-7xl leading-none text-plum">{label}</h1>
 }

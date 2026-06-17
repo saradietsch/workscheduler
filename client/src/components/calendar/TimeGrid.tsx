@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react'
 
-const HOUR_HEIGHT = 44
+const HOUR_HEIGHT = 40
 const TIME_LABEL_WIDTH = 48
 const DEFAULT_SCROLL_HOUR = 7
-const VISIBLE_HOURS = 15
+const VISIBLE_HOURS = 12
 
 const hours = Array.from({ length: 24 }, (_, i) => i)
 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -34,7 +34,7 @@ export function TimeGrid() {
         {hours.map((hour) => (
           <div key={hour} className="contents">
             <div
-              className="border-t border-border pr-2 text-right text-xs text-plum/70"
+              className="border-t border-border pr-2 text-right text-sm text-plum/70"
               style={{ height: HOUR_HEIGHT }}
             >
               {formatHour(hour)}

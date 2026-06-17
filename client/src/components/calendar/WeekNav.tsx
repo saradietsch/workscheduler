@@ -7,7 +7,7 @@ export function WeekNav() {
       <button
         type="button"
         aria-label="Previous week"
-        className="font-handwrite text-lg text-plum"
+        className="font-handwrite text-2xl text-plum"
       >
         ◀
       </button>
@@ -17,7 +17,7 @@ export function WeekNav() {
       >
         <div />
         {days.map((day) => (
-          <div key={day} className="text-center font-handwrite text-sm text-plum">
+          <div key={day} className="text-center font-handwrite text-xl text-plum">
             {day}
           </div>
         ))}
@@ -25,7 +25,7 @@ export function WeekNav() {
       <button
         type="button"
         aria-label="Next week"
-        className="font-handwrite text-lg text-plum"
+        className="font-handwrite text-2xl text-plum"
       >
         ▶
       </button>
