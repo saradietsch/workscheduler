@@ -69,10 +69,45 @@ Reference sizes (Tailwind text- scale):
 - Rendered with a transparent background — no circular avatar backing
 - Large relative to the sidebar: ~160px (h-40 w-40), right-aligned at the bottom of the sidebar stack
 
+## Jobs
+- A job is a name + one color from the Job Colors palette (mango, blush, sunflower, lilac, rose)
+- A calendar block's color always comes from its assigned job's color — never set independently
+- Default jobs seeded: "Serving" (mango), "Internship" (lilac), "School" (blush)
+- Auto-assignment when a block has no explicit job yet:
+  - Events from a non-primary Google calendar (e.g. the 7shifts iCal sync calendar) default to
+    the "Serving" job
+  - Events created by accepting a suggested block (always land on the primary Google calendar)
+    default to the "Internship" job
+  - Events from Outlook/Microsoft 365 (Teams meetings) default to the "School" job
+  - This is a fallback only — explicit assignment (see below) always wins, for sources that
+    support it
+- Job assignment is stored on the Google Calendar event itself via `extendedProperties.private.jobId`,
+  not in a local join table — it travels with the event and survives even if our DB doesn't have a
+  record of it. Outlook events don't support this (read-only integration), so they always show
+  their default and aren't clickable for reassignment
+
+## Calendar Block Interaction
+- Clicking any block (real event or accepted suggestion) opens a Dialog to reassign its job
+  (which changes its color accordingly)
+- All blocks (real events and suggestions) render with a thin plum-tinted border (not pure
+  black — use the same `rgba(92,48,84,.12)` tint as shadows) so adjacent blocks on the same day
+  don't visually blend together
+- Suggested blocks use a Switch (not a button) to accept: flipping it on creates the real
+  Google Calendar event and the block leaves the "suggested" overlay (it now renders as a normal
+  job-colored event instead of a striped suggestion). Dismissing a suggestion (switch left off,
+  or explicitly dismissed) hides it as a draft without deleting its row — but if it had already
+  been accepted (a real event exists) and is then dismissed, the real event is deleted too, so
+  there's never an orphaned calendar event with no corresponding UI state
+
+## Tasks Panel
+- Each task has a checkbox to mark it complete, which updates the task in Asana directly (not
+  just locally)
+
 ## Components to use from shadcn/ui
-- Dialog → modals (add shift, add job)
-- Toggle → suggested blocks switch
-- Button → all buttons
+- Dialog → modals (add shift, add job, edit a calendar block's job/color)
+- Toggle → suggested blocks visibility switch (the toolbar toggle, not the per-block accept control)
+- Switch → per-block accept control on suggested blocks
+- Button → all other buttons
 
 ## Rules
 - No #FFFFFF or `white` anywhere — always use ivory (#FFFEEA)

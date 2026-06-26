@@ -1,6 +1,11 @@
 import { Router } from 'express'
 import { getGoogleAuthUrl, exchangeGoogleCode, isGoogleAuthed } from '../auth/google.js'
 import { getAsanaAuthUrl, exchangeAsanaCode, isAsanaAuthed } from '../auth/asana.js'
+import {
+  getMicrosoftAuthUrl,
+  exchangeMicrosoftCode,
+  isMicrosoftAuthed,
+} from '../auth/microsoft.js'
 
 export const authRouter = Router()
 
@@ -20,8 +25,8 @@ authRouter.get('/google/callback', async (req, res) => {
   }
 })
 
-authRouter.get('/google/status', (_req, res) => {
-  res.json({ connected: isGoogleAuthed() })
+authRouter.get('/google/status', async (_req, res) => {
+  res.json({ connected: await isGoogleAuthed() })
 })
 
 authRouter.get('/asana', (_req, res) => {
@@ -38,6 +43,24 @@ authRouter.get('/asana/callback', async (req, res) => {
   }
 })
 
-authRouter.get('/asana/status', (_req, res) => {
-  res.json({ connected: isAsanaAuthed() })
+authRouter.get('/asana/status', async (_req, res) => {
+  res.json({ connected: await isAsanaAuthed() })
+})
+
+authRouter.get('/microsoft', (_req, res) => {
+  res.redirect(getMicrosoftAuthUrl())
+})
+
+authRouter.get('/microsoft/callback', async (req, res) => {
+  try {
+    const code = req.query.code as string
+    await exchangeMicrosoftCode(code)
+    res.redirect(clientUrl)
+  } catch {
+    res.status(500).json({ error: 'Failed to connect Microsoft 365', code: 500 })
+  }
+})
+
+authRouter.get('/microsoft/status', async (_req, res) => {
+  res.json({ connected: await isMicrosoftAuthed() })
 })

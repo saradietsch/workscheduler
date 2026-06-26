@@ -31,14 +31,40 @@ it actively suggests when to do each task and lets the user accept or adjust tho
 - Suggestions are visually distinct from real events on the calendar (per `component-style.md`,
   rendered as a diagonal-striped pattern, not a solid block) until accepted.
 - The "Suggested blocks" toggle in the calendar toolbar controls whether suggestions are shown.
+- Generation is scoped to the week being viewed: tasks due in a later week are excluded from that
+  week's suggestions, even if there's free time available. A task with no due date is never
+  excluded on this basis (it has no week to be "ahead of").
 - A suggestion is a draft until the user acts on it:
-  - **Accept** → creates a real Google Calendar event; the suggestion becomes a normal event
-  - **Drag** → repositions the suggestion (and, if already accepted, updates the real event)
-  - **Dismiss** → discarded, no calendar change
+  - **Accept** (a per-block Switch, not a button) → creates a real Google Calendar event; the
+    block leaves the suggested overlay and renders as a normal job-colored event from then on
+  - **Drag** → repositions the suggestion (and, if already accepted, updates the real event's time)
+  - **Dismiss** → hidden as a draft (row kept, not shown); if it had already been accepted, the
+    real Google Calendar event is deleted too, so there's never an accepted-but-invisible event
+
+## Jobs
+- See `component-style.md` for the job color/auto-assignment rules. Mechanically: job
+  *definitions* (name + color) live in the database (`jobs` table), but which job a specific
+  calendar event belongs to is stored on the Google event itself
+  (`extendedProperties.private.jobId`), not in a local join table. This means job assignment
+  survives independent of our database, and works uniformly for events we created (accepted
+  suggestions) and events we didn't (synced shifts) — both are just Google Calendar events we
+  have write access to.
+- When listing calendar events, resolve each event's job by: explicit `jobId` in
+  `extendedProperties` if present, otherwise fall back to the source-based default. The fallback
+  is keyed off a `defaultSource` column on the job (`'primary' | 'secondary' | 'outlook'`), not a
+  hardcoded job name. Three sources, three seeded default jobs:
+  - Primary Google calendar → "Internship" (lilac)
+  - Any non-primary Google calendar, e.g. the 7shifts sync → "Serving" (mango)
+  - Outlook/Microsoft 365 (Teams meetings) → "School" (blush)
+- Outlook events can't carry an explicit `jobId` override (Graph extended-property writes aren't
+  wired up, and the integration is read-only by design) — they always show the "School" default
+  and aren't clickable in the click-to-edit dialog. Google events (synced or accepted) can always
+  be reassigned, since `extendedProperties` writes are cheap and already built.
 
 ## Persistence
-- Task estimates, suggested blocks (and their accept/dismiss/drag state), and OAuth tokens all
-  live in a real database (Neon Postgres via Drizzle) — not in-memory, not a local file.
+- Task estimates, suggested blocks (and their accept/dismiss/drag state), job definitions, and
+  OAuth tokens all live in a real database (Neon Postgres via Drizzle) — not in-memory, not a
+  local file. Per-event job *assignment* is the one exception — see Jobs above.
 - This matters specifically because the app deploys to Vercel: serverless functions don't
   persist memory or disk between invocations, so anything that needs to survive a request has to
   live in the database, including OAuth tokens (previously in-memory — that would silently break
@@ -48,3 +74,8 @@ it actively suggests when to do each task and lets the user accept or adjust tho
 - Asana custom fields for estimates — estimates live only in Sara Scheduler, not synced back to Asana
 - Recurring/repeating suggested blocks
 - Multi-user support — this remains a single-user personal app
+
+## Future ideas (not built yet)
+- A small "work ahead" box showing next week's tasks, separate from the main suggestion flow —
+  for when the user wants to voluntarily pull forward work that wouldn't normally be suggested
+  for the current week per the due-date scoping rule above

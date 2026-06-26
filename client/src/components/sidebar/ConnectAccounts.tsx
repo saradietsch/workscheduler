@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 
-async function fetchStatus(provider: 'google' | 'asana') {
+async function fetchStatus(provider: 'google' | 'asana' | 'microsoft') {
   const res = await fetch(`/api/auth/${provider}/status`)
   const data = (await res.json()) as { connected: boolean }
   return data.connected
@@ -12,7 +12,7 @@ function ConnectRow({
   provider,
 }: {
   label: string
-  provider: 'google' | 'asana'
+  provider: 'google' | 'asana' | 'microsoft'
 }) {
   const { data: connected, isLoading } = useQuery({
     queryKey: ['auth', provider, 'status'],
@@ -40,6 +40,7 @@ export function ConnectAccounts() {
     <div className="flex flex-col gap-2 rounded-card bg-ivory p-4">
       <ConnectRow label="Google Calendar" provider="google" />
       <ConnectRow label="Asana" provider="asana" />
+      <ConnectRow label="Microsoft 365" provider="microsoft" />
     </div>
   )
 }

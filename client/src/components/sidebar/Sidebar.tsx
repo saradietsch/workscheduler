@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { ConnectAccounts } from './ConnectAccounts'
+import { TasksPanel } from './TasksPanel'
 import { JobsPanel } from './JobsPanel'
 import { ChatBox } from './ChatBox'
 import { FrogMascot } from './FrogMascot'
@@ -11,6 +12,7 @@ export function Sidebar() {
         + Add event
       </Button>
       <ConnectAccounts />
+      <TasksPanel />
       <JobsPanel />
       <ChatBox />
       <FrogMascot />

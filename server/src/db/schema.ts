@@ -14,9 +14,17 @@ export const taskEstimates = pgTable('task_estimates', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 })
 
+export const jobs = pgTable('jobs', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  color: text('color').notNull(), // 'mango' | 'blush' | 'sunflower' | 'lilac' | 'rose'
+  defaultSource: text('default_source'), // 'primary' | 'secondary' | null
+})
+
 export const suggestedBlocks = pgTable('suggested_blocks', {
   id: text('id').primaryKey(),
   asanaTaskId: text('asana_task_id').notNull(),
+  taskName: text('task_name').notNull(),
   start: timestamp('start').notNull(),
   end: timestamp('end').notNull(),
   status: text('status').notNull(), // 'suggested' | 'accepted' | 'dismissed'

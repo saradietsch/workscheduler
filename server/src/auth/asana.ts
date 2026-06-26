@@ -40,19 +40,19 @@ export async function exchangeAsanaCode(code: string) {
     expires_in: number
   }
 
-  tokenStore.setAsanaTokens({
+  await tokenStore.setAsanaTokens({
     accessToken: data.access_token,
     refreshToken: data.refresh_token,
     expiresAt: Date.now() + data.expires_in * 1000,
   })
 }
 
-export function isAsanaAuthed() {
-  return tokenStore.getAsanaTokens() !== null
+export async function isAsanaAuthed() {
+  return (await tokenStore.getAsanaTokens()) !== null
 }
 
-function getAccessToken() {
-  const stored = tokenStore.getAsanaTokens()
+async function getAccessToken() {
+  const stored = await tokenStore.getAsanaTokens()
   if (!stored) throw new AsanaAuthRequiredError()
   return stored.accessToken
 }
@@ -60,6 +60,7 @@ function getAccessToken() {
 interface AsanaApiTask {
   gid: string
   name: string
+  notes: string | null
   due_on: string | null
   completed: boolean
   permalink_url: string
@@ -67,7 +68,7 @@ interface AsanaApiTask {
 }
 
 export async function fetchDefaultAsanaWorkspaceId() {
-  const accessToken = getAccessToken()
+  const accessToken = await getAccessToken()
   const response = await fetch(`${API_BASE}/workspaces`, {
     headers: { Authorization: `Bearer ${accessToken}` },
   })
@@ -79,12 +80,12 @@ export async function fetchDefaultAsanaWorkspaceId() {
 }
 
 export async function fetchAsanaTasks(workspaceId: string) {
-  const accessToken = getAccessToken()
+  const accessToken = await getAccessToken()
   const params = new URLSearchParams({
     workspace: workspaceId,
     assignee: 'me',
     completed_since: 'now',
-    opt_fields: 'name,due_on,completed,permalink_url,projects.name',
+    opt_fields: 'name,notes,due_on,completed,permalink_url,projects.name',
   })
 
   const response = await fetch(`${API_BASE}/tasks?${params.toString()}`, {
@@ -98,9 +99,24 @@ export async function fetchAsanaTasks(workspaceId: string) {
   return data.map((task) => ({
     id: task.gid,
     name: task.name,
+    notes: task.notes ?? undefined,
     dueDate: task.due_on,
     completed: task.completed,
     projectName: task.projects[0]?.name ?? null,
     permalink: task.permalink_url,
   }))
+}
+
+export async function setAsanaTaskCompleted(taskId: string, completed: boolean) {
+  const accessToken = await getAccessToken()
+  const response = await fetch(`${API_BASE}/tasks/${taskId}`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ data: { completed } }),
+  })
+
+  if (!response.ok) throw new Error(`Asana task update failed: ${response.status}`)
 }
