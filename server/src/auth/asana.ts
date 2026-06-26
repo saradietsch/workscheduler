@@ -66,6 +66,18 @@ interface AsanaApiTask {
   projects: { name: string }[]
 }
 
+export async function fetchDefaultAsanaWorkspaceId() {
+  const accessToken = getAccessToken()
+  const response = await fetch(`${API_BASE}/workspaces`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  })
+
+  if (!response.ok) throw new Error(`Asana workspaces fetch failed: ${response.status}`)
+
+  const { data } = (await response.json()) as { data: { gid: string }[] }
+  return data[0]?.gid ?? null
+}
+
 export async function fetchAsanaTasks(workspaceId: string) {
   const accessToken = getAccessToken()
   const params = new URLSearchParams({

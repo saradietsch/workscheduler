@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import type { CalendarEvent } from '@shared'
 
 const HOUR_HEIGHT = 40
 const TIME_LABEL_WIDTH = 48
@@ -14,7 +15,15 @@ function formatHour(hour: number) {
   return `${display} ${period}`
 }
 
-export function TimeGrid() {
+function minutesIntoDay(date: Date) {
+  return date.getHours() * 60 + date.getMinutes()
+}
+
+interface TimeGridProps {
+  events: CalendarEvent[]
+}
+
+export function TimeGrid({ events }: TimeGridProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -28,7 +37,7 @@ export function TimeGrid() {
       style={{ height: VISIBLE_HOURS * HOUR_HEIGHT }}
     >
       <div
-        className="grid"
+        className="relative grid"
         style={{ gridTemplateColumns: `${TIME_LABEL_WIDTH}px repeat(7, 1fr)` }}
       >
         {hours.map((hour) => (
@@ -48,6 +57,32 @@ export function TimeGrid() {
             ))}
           </div>
         ))}
+
+        {events.map((event) => {
+          const start = new Date(event.start)
+          const end = new Date(event.end)
+          const dayIndex = start.getDay()
+          const top = (minutesIntoDay(start) / 60) * HOUR_HEIGHT
+          const height = Math.max(
+            ((minutesIntoDay(end) - minutesIntoDay(start)) / 60) * HOUR_HEIGHT,
+            20,
+          )
+
+          return (
+            <div
+              key={event.id}
+              className="absolute overflow-hidden rounded-md bg-rose p-1 text-xs text-ivory"
+              style={{
+                top,
+                height,
+                left: `calc(${TIME_LABEL_WIDTH}px + (100% - ${TIME_LABEL_WIDTH}px) * ${dayIndex} / 7)`,
+                width: `calc((100% - ${TIME_LABEL_WIDTH}px) / 7)`,
+              }}
+            >
+              {event.title}
+            </div>
+          )
+        })}
       </div>
     </div>
   )

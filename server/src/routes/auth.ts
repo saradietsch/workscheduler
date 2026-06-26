@@ -4,6 +4,8 @@ import { getAsanaAuthUrl, exchangeAsanaCode, isAsanaAuthed } from '../auth/asana
 
 export const authRouter = Router()
 
+const clientUrl = process.env.CLIENT_URL ?? '/'
+
 authRouter.get('/google', (_req, res) => {
   res.redirect(getGoogleAuthUrl())
 })
@@ -12,7 +14,7 @@ authRouter.get('/google/callback', async (req, res) => {
   try {
     const code = req.query.code as string
     await exchangeGoogleCode(code)
-    res.redirect('/')
+    res.redirect(clientUrl)
   } catch {
     res.status(500).json({ error: 'Failed to connect Google Calendar', code: 500 })
   }
@@ -30,7 +32,7 @@ authRouter.get('/asana/callback', async (req, res) => {
   try {
     const code = req.query.code as string
     await exchangeAsanaCode(code)
-    res.redirect('/')
+    res.redirect(clientUrl)
   } catch {
     res.status(500).json({ error: 'Failed to connect Asana', code: 500 })
   }

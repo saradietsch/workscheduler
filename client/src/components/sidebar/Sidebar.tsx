@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button'
+import { ConnectAccounts } from './ConnectAccounts'
 import { JobsPanel } from './JobsPanel'
 import { ChatBox } from './ChatBox'
 import { FrogMascot } from './FrogMascot'
@@ -9,6 +10,7 @@ export function Sidebar() {
       <Button className="font-handwrite text-lg" size="lg">
         + Add event
       </Button>
+      <ConnectAccounts />
       <JobsPanel />
       <ChatBox />
       <FrogMascot />

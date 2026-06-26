@@ -1,17 +1,24 @@
 import { Router } from 'express'
-import { fetchAsanaTasks, AsanaAuthRequiredError } from '../auth/asana.js'
+import {
+  fetchAsanaTasks,
+  fetchDefaultAsanaWorkspaceId,
+  AsanaAuthRequiredError,
+} from '../auth/asana.js'
 
 export const asanaRouter = Router()
 
 asanaRouter.get('/tasks', async (req, res) => {
-  const { workspaceId } = req.query
-
-  if (typeof workspaceId !== 'string') {
-    res.status(400).json({ error: 'workspaceId is required', code: 400 })
-    return
-  }
+  const queryWorkspaceId = req.query.workspaceId
 
   try {
+    const workspaceId =
+      typeof queryWorkspaceId === 'string' ? queryWorkspaceId : await fetchDefaultAsanaWorkspaceId()
+
+    if (!workspaceId) {
+      res.status(400).json({ error: 'No Asana workspace found', code: 400 })
+      return
+    }
+
     const tasks = await fetchAsanaTasks(workspaceId)
     res.json({ tasks })
   } catch (err) {
