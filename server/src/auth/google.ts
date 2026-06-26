@@ -60,19 +60,28 @@ export async function fetchGoogleCalendarEvents(timeMin: string, timeMax: string
   const auth = getAuthorizedClient()
   const calendar = google.calendar({ version: 'v3', auth })
 
-  const { data } = await calendar.events.list({
-    calendarId: 'primary',
-    timeMin,
-    timeMax,
-    singleEvents: true,
-    orderBy: 'startTime',
-  })
+  const { data: calendarList } = await calendar.calendarList.list()
+  const calendarIds = (calendarList.items ?? []).map((cal) => cal.id!).filter(Boolean)
 
-  return (data.items ?? []).map((event) => ({
-    id: event.id!,
-    title: event.summary ?? '(untitled)',
-    start: event.start?.dateTime ?? event.start?.date ?? '',
-    end: event.end?.dateTime ?? event.end?.date ?? '',
-    calendarId: 'primary',
-  }))
+  const results = await Promise.all(
+    calendarIds.map((calendarId) =>
+      calendar.events.list({
+        calendarId,
+        timeMin,
+        timeMax,
+        singleEvents: true,
+        orderBy: 'startTime',
+      }),
+    ),
+  )
+
+  return results.flatMap(({ data }, i) =>
+    (data.items ?? []).map((event) => ({
+      id: event.id!,
+      title: event.summary ?? '(untitled)',
+      start: event.start?.dateTime ?? event.start?.date ?? '',
+      end: event.end?.dateTime ?? event.end?.date ?? '',
+      calendarId: calendarIds[i],
+    })),
+  )
 }

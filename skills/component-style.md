@@ -62,6 +62,7 @@ Reference sizes (Tailwind text- scale):
 - Time label column: 48px wide
 - Week strip uses grid-template-columns: 48px repeat(7, 1fr) to align with time grid
 - Hour height: 40px
+- Defualt week starts on Monday, ends on Sunday
 
 ## Frog Mascot
 - Source image: `client/src/frog.png` (flat doodle-style illustration, thick uneven black outline, open mouth with pink/rose tongue)
